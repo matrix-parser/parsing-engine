@@ -22,7 +22,7 @@ class BoundingBox:
 @dataclass
 class Word:
     text: str
-    origin: Vertex
+    center: Vertex
     bounding_box: BoundingBox
 
 
@@ -64,7 +64,34 @@ class OCR:
             pickle.dump(output, f, pickle.HIGHEST_PROTOCOL)
 
     def get_words(self):
-        pass
+        words = []
+        for annotation in self.annotations:
+            text = annotation['text']
+            vertices = annotation['vertices']
+        
+            # Assuming the vertices are ordered [topleft, topright, bottomright, bottomleft]
+            topleft = Vertex(x=vertices[0][0], y=vertices[0][1])
+            topright = Vertex(x=vertices[1][0], y=vertices[1][1])
+            bottomright = Vertex(x=vertices[2][0], y=vertices[2][1])
+            bottomleft = Vertex(x=vertices[3][0], y=vertices[3][1])
+            
+            center = topleft + topright + bottomleft + bottomright
+            center.x /= 4
+            center.y /= 4
+            
+            # Create BoundingBox object
+            bounding_box = BoundingBox(
+                topleft=topleft,
+                topright=topright,
+                bottomleft=bottomleft,
+                bottomright=bottomright,
+            )
+            
+            # Create Word object
+            word = Word(text=text, center=center, bounding_box=bounding_box)
+            words.append(word)
+    
+        return words
 
 
 if __name__ == "__main__":
