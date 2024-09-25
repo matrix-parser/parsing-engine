@@ -23,4 +23,5 @@ class Word:
     text: str
     center: Vertex
     bounding_box: BoundingBox
+    page: int
 

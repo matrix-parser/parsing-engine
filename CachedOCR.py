@@ -21,6 +21,7 @@ class OCR:
         for annotation in self.annotations:
             text = annotation["text"]
             vertices = annotation["vertices"]
+            page = annotation["page"]
 
             # Assuming the vertices are ordered [topleft, topright, bottomright, bottomleft]
             topleft = Vertex(x=vertices[0][0], y=vertices[0][1])
@@ -41,7 +42,7 @@ class OCR:
             )
 
             # Create Word object
-            word = Word(text=text, center=center, bounding_box=bounding_box)
+            word = Word(text=text, center=center, bounding_box=bounding_box,page=page)
             words.append(word)
 
         return words

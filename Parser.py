@@ -1,11 +1,56 @@
 from CachedOCR import OCR
 import re
+from itertools import product
 
 
 words = []
+def select_with_query(query):
+    # Regular expression to match multiple 'with' clauses and a complex 'where' condition
+    m = re.match(
+        r"select (.*) from (.*) as (.*) with (.*) where (.*)",
+        query
+    )
+
+    if m:
+        groups = m.groups()
+
+        fields = groups[0]  
+        collection = groups[1]  
+        alias = groups[2]  
+
+        
+        with_many = groups[3].split(",")  
+
+        with_aliases = []
+        with_collections = []
+        for w in with_many:
+            w_col, w_alias = w.strip().split(" as ")
+            with_collections.append(w_col.strip())  # e.g., 'keys', 'prices'
+            with_aliases.append(w_alias.strip())  # e.g., 'key', 'price'
+
+        
+        filter_condition = groups[4]  # e.g., '1400 < word.center.x < 1500'
+
+        
+        zip_statement = f"({alias}, {', '.join(with_aliases)})"  # e.g., '(word, key, price)'
+        product_statement = f"({collection}, {', '.join(with_collections)})"  # e.g., '(words, keys, prices)'
+
+        
+        exec_query = (
+            f"from itertools import product\ndef query():\n\tglobal {fields}\n\t"
+            f"{fields} = [{alias} for {zip_statement} in product{product_statement} "
+            f"if {filter_condition}]\nquery()"
+        )
+
+        execute(exec_query)
+        return
+
+
 
 
 def select_query(query):
+    if "with" in query: select_with_query(query); return
+
     m = re.match(
         "select (.*) from (.*) as (.*) where (.*)",
         query,
