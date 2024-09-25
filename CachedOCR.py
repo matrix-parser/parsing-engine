@@ -1,6 +1,7 @@
 from ocr_types import *
 import pickle
 
+
 class OCR:
     def __init__(self, pdf_path):
         self.pdf_path = pdf_path
@@ -18,19 +19,19 @@ class OCR:
     def get_words(self):
         words = []
         for annotation in self.annotations:
-            text = annotation['text']
-            vertices = annotation['vertices']
-        
+            text = annotation["text"]
+            vertices = annotation["vertices"]
+
             # Assuming the vertices are ordered [topleft, topright, bottomright, bottomleft]
             topleft = Vertex(x=vertices[0][0], y=vertices[0][1])
             topright = Vertex(x=vertices[1][0], y=vertices[1][1])
             bottomright = Vertex(x=vertices[2][0], y=vertices[2][1])
             bottomleft = Vertex(x=vertices[3][0], y=vertices[3][1])
-            
+
             center = topleft + topright + bottomleft + bottomright
             center.x /= 4
             center.y /= 4
-            
+
             # Create BoundingBox object
             bounding_box = BoundingBox(
                 topleft=topleft,
@@ -38,17 +39,15 @@ class OCR:
                 bottomleft=bottomleft,
                 bottomright=bottomright,
             )
-            
+
             # Create Word object
             word = Word(text=text, center=center, bounding_box=bounding_box)
             words.append(word)
-    
+
         return words
 
 
-
 if __name__ == "__main__":
-    ocr = OCR("test_pdfs/assignment.pdf")
+    ocr = OCR("test_pdfs/invoice.pdf")
     words = ocr.get_words()
     print(words)
-

@@ -7,8 +7,7 @@ class Vertex:
     y: int
 
     def __add__(self, o):
-        return Vertex(x = o.x + self.x, y = o.y + self.y)
-
+        return Vertex(x=o.x + self.x, y=o.y + self.y)
 
 
 @dataclass
@@ -24,3 +23,4 @@ class Word:
     text: str
     center: Vertex
     bounding_box: BoundingBox
+
