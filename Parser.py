@@ -1,4 +1,4 @@
-from GoogleOCR import OCR
+from CachedOCR import OCR
 import re
 
 
@@ -38,9 +38,25 @@ def end_query(string):
         return
 
 
+def set_query(string):
+    m = re.match(
+        "set (.*)",
+        string,
+    )
+    if not m:
+        return
+    groups = m.groups()
+    exec_query = (
+        f"def query():\n\tglobal {groups[0].split()[0]}\n\t{groups[0]}\nquery()"
+    )
+    execute(exec_query)
+    return
+
+
 queries = [
     {"keyword": "select", "function": select_query},
     {"keyword": "export", "function": export_query},
+    {"keyword": "set", "function": set_query},
     {"keyword": "end", "function": end_query},
 ]
 
