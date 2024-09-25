@@ -3,28 +3,7 @@ from dataclasses import dataclass
 from google.cloud import vision
 from pdf2image import convert_from_path
 import pickle
-
-
-@dataclass
-class Vertex:
-    x: int
-    y: int
-
-
-@dataclass
-class BoundingBox:
-    topleft: Vertex
-    topright: Vertex
-    bottomleft: Vertex
-    bottomright: Vertex
-
-
-@dataclass
-class Word:
-    text: str
-    center: Vertex
-    bounding_box: BoundingBox
-
+from ocr_types import *
 
 class OCR:
     def __init__(self, pdf_path):
@@ -45,7 +24,14 @@ class OCR:
             vision_image = vision.Image(content=byte_stream.getvalue())
             response = self.client.text_detection(image=vision_image)
             annotations = response.text_annotations
-            self.annotations = annotations
+            output = []
+            for annotation in annotations:
+                text = annotation.description
+                vertices = []
+                for vertex in annotation.bounding_poly.vertices:
+                    vertices.append((vertex.x, vertex.y))
+                output.append({"text": text, "vertices": vertices})
+            self.annotations = output
 
     def cache_annotations(self):
         with open(
@@ -54,14 +40,7 @@ class OCR:
             ),
             "wb",
         ) as f:
-            output = []
-            for annotation in self.annotations:
-                text = annotation.description
-                vertices = []
-                for vertex in annotation.bounding_poly.vertices:
-                    vertices.append((vertex.x, vertex.y))
-                output.append({"text": text, "vertices": vertices})
-            pickle.dump(output, f, pickle.HIGHEST_PROTOCOL)
+            pickle.dump(self.annotations, f, pickle.HIGHEST_PROTOCOL)
 
     def get_words(self):
         words = []
@@ -97,6 +76,9 @@ class OCR:
 if __name__ == "__main__":
     ocr = OCR("test_pdfs/assignment.pdf")
     ocr.cache_annotations()
+    words = ocr.get_words()
+    print(words)
+
 
 # def detect_text(path):
 #     """Detects text in the file."""
