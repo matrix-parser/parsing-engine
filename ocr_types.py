@@ -2,6 +2,12 @@ from dataclasses import dataclass
 
 
 @dataclass
+class Resolution:
+    width: int
+    height: int
+
+
+@dataclass
 class Vertex:
     x: int
     y: int
@@ -24,4 +30,5 @@ class Word:
     center: Vertex
     bounding_box: BoundingBox
     page: int
+    resolution: Resolution
 
