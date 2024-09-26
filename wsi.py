@@ -26,11 +26,16 @@ def get_words():
 
 @app.route("/run_query", methods=["POST"])
 def run_query():
-    queries = request.json
-    for query in queries:
-        Parser.query(query)
-    Parser.query("export item as items")
-    return json.dumps([asdict(word) for word in Parser.execute("")["items"]])
+    for line in request.json["query"].split("\n"):
+        if not line:
+            continue
+        print(line)
+        Parser.query(line)
+    response = {}
+    for key in Parser.execute(""):
+        response[key] = [asdict(word) for word in Parser.execute("")[key]]
+    print(response)
+    return json.dumps(response)
 
 
 # main driver function
