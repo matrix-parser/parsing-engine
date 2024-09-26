@@ -4,22 +4,20 @@ from itertools import product
 
 
 words = []
+
+
 def select_with_query(query):
     # Regular expression to match multiple 'with' clauses and a complex 'where' condition
-    m = re.match(
-        r"select (.*) from (.*) as (.*) with (.*) where (.*)",
-        query
-    )
+    m = re.match(r"select (.*) from (.*) as (.*) with (.*) where (.*)", query)
 
     if m:
         groups = m.groups()
 
-        fields = groups[0]  
-        collection = groups[1]  
-        alias = groups[2]  
+        fields = groups[0]
+        collection = groups[1]
+        alias = groups[2]
 
-        
-        with_many = groups[3].split(",")  
+        with_many = groups[3].split(",")
 
         with_aliases = []
         with_collections = []
@@ -28,14 +26,13 @@ def select_with_query(query):
             with_collections.append(w_col.strip())  # e.g., 'keys', 'prices'
             with_aliases.append(w_alias.strip())  # e.g., 'key', 'price'
 
-        
         filter_condition = groups[4]  # e.g., '1400 < word.center.x < 1500'
 
-        
-        zip_statement = f"({alias}, {', '.join(with_aliases)})"  # e.g., '(word, key, price)'
+        zip_statement = (
+            f"({alias}, {', '.join(with_aliases)})"  # e.g., '(word, key, price)'
+        )
         product_statement = f"({collection}, {', '.join(with_collections)})"  # e.g., '(words, keys, prices)'
 
-        
         exec_query = (
             f"from itertools import product\ndef query():\n\tglobal {fields}\n\t"
             f"{fields} = [{alias} for {zip_statement} in product{product_statement} "
@@ -46,10 +43,10 @@ def select_with_query(query):
         return
 
 
-
-
 def select_query(query):
-    if "with" in query: select_with_query(query); return
+    if "with" in query:
+        select_with_query(query)
+        return
 
     m = re.match(
         "select (.*) from (.*) as (.*) where (.*)",
@@ -70,7 +67,7 @@ def export_query(query):
     )
     if m:
         groups = m.groups()
-        exec_query = f"def query():\n\tglobal output\n\toutput['{groups[1]}'] = [word.text for word in {groups[0]}]\nquery()"
+        exec_query = f"def query():\n\tglobal output\n\toutput['{groups[1]}'] = [word for word in {groups[0]}]\nquery()"
         execute(exec_query)
         return None
 
@@ -106,15 +103,33 @@ queries = [
 ]
 
 
+pdf_file = ""
+
+
 def set_pdf(pdf_file_path):
+    global pdf_file
     global words
 
     ocr = OCR(pdf_file_path)
     words = ocr.get_words()
+    pdf_file = pdf_file_path
+
+
+def get_pdf_file_path():
+    return pdf_file
+
+
+def get_words():
+    return words
+
+
+output = {}
 
 
 def execute(string):
+    global output
     exec(string)
+    return output
 
 
 def decode(string):

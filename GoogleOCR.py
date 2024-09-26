@@ -21,6 +21,7 @@ class OCR:
     def perform_ocr(self):
         output = []
         for page, image in enumerate(self.images):
+            print(image.size)
             byte_stream = io.BytesIO()
             image.save(byte_stream, format="PNG")
             vision_image = vision.Image(content=byte_stream.getvalue())
@@ -31,7 +32,7 @@ class OCR:
                 vertices = []
                 for vertex in annotation.bounding_poly.vertices:
                     vertices.append((vertex.x, vertex.y))
-                output.append({"text": text, "vertices": vertices,"page": page})
+                output.append({"text": text, "vertices": vertices, "page": page})
         self.annotations = output
 
     def cache_annotations(self):
@@ -76,7 +77,7 @@ class OCR:
 
 
 if __name__ == "__main__":
-    #ocr = OCR("test_pdfs/09232024_WHOLESALE.pdf")
+    # ocr = OCR("test_pdfs/09232024_WHOLESALE.pdf")
     ocr = OCR("test_pdfs/invoice.pdf")
     ocr.cache_annotations()
     words = ocr.get_words()
