@@ -82,7 +82,7 @@ class OCR:
 
 if __name__ == "__main__":
     # ocr = OCR("test_pdfs/09232024_WHOLESALE.pdf")
-    ocr = OCR("test_pdfs/invoice.pdf")
+    ocr = OCR("test_pdfs/invoice1.pdf")
     ocr.cache_annotations()
     words = ocr.get_words()
     print(words)
