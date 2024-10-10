@@ -15,7 +15,7 @@ CORS(app, origins=["http://localhost:5173"])  # Allow only your React app
 # the associated function.
 @app.route("/pdf")
 def get_pdf():
-    Parser.set_pdf("test_pdfs/invoice.pdf")
+    Parser.set_pdf("test_pdfs/invoice1.pdf")
     return send_file(Parser.get_pdf_file_path())
 
 

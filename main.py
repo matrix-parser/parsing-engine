@@ -1,7 +1,7 @@
 import Parser
 
 # Parser.set_pdf("test_pdfs/09232024_WHOLESALE.pdf")
-Parser.set_pdf("test_pdfs/invoice.pdf")
+Parser.set_pdf("test_pdfs/invoice1.pdf")
 
 Parser.query("set quantity_minimum = 2")
 Parser.query(

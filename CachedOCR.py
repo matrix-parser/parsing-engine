@@ -57,6 +57,6 @@ class OCR:
 
 
 if __name__ == "__main__":
-    ocr = OCR("test_pdfs/invoice.pdf")
+    ocr = OCR("test_pdfs/invoice1.pdf")
     words = ocr.get_words()
     print(words)
