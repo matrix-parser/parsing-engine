@@ -17,12 +17,12 @@ class OCR:
 
     def convert_to_images(self):
         self.images = convert_from_path(self.pdf_path)
-        #self.resolutions = [(image.width,image.height) for image in self.images]
+        # self.resolutions = [(image.width,image.height) for image in self.images]
 
     def perform_ocr(self):
         output = []
         for page, image in enumerate(self.images):
-            resolution = (image.width,image.height) 
+            resolution = (image.width, image.height)
             byte_stream = io.BytesIO()
             image.save(byte_stream, format="PNG")
             vision_image = vision.Image(content=byte_stream.getvalue())
@@ -33,7 +33,14 @@ class OCR:
                 vertices = []
                 for vertex in annotation.bounding_poly.vertices:
                     vertices.append((vertex.x, vertex.y))
-                output.append({"text": text, "vertices": vertices, "page": page,"resolution": resolution})
+                output.append(
+                    {
+                        "text": text,
+                        "vertices": vertices,
+                        "page": page,
+                        "resolution": resolution,
+                    }
+                )
         self.annotations = output
 
     def cache_annotations(self):
@@ -47,12 +54,11 @@ class OCR:
 
     def get_words(self):
         words = []
-        self.annotations.pop(0)
         for annotation in self.annotations:
             text = annotation["text"]
             vertices = annotation["vertices"]
             page = annotation["page"]
-            width,height = annotation["resolution"]
+            width, height = annotation["resolution"]
 
             # Assuming the vertices are ordered [topleft, topright, bottomright, bottomleft]
             topleft = Vertex(x=vertices[0][0], y=vertices[0][1])
@@ -74,15 +80,22 @@ class OCR:
             resolution = Resolution(width=width, height=height)
 
             # Create Word object
-            word = Word(text=text, center=center, bounding_box=bounding_box, page=page,resolution=resolution)
+            word = Word(
+                text=text,
+                center=center,
+                bounding_box=bounding_box,
+                page=page,
+                resolution=resolution,
+            )
             words.append(word)
 
+        words.pop(0)
         return words
 
 
 if __name__ == "__main__":
     # ocr = OCR("test_pdfs/09232024_WHOLESALE.pdf")
-    ocr = OCR("test_pdfs/invoice1.pdf")
+    ocr = OCR("test_pdfs/invoice.pdf")
     ocr.cache_annotations()
     words = ocr.get_words()
     print(words)

@@ -21,19 +21,9 @@ Parser.query("export amounts as amounts")
 Parser.query("export prices as prices")
 
 
-
-
-
 # For invoice1.pdf
 
 # Parser.query(
 #     "select item from words as word where 257 < word.center.x < 385 and 541 < word.center.y and word.page == 0"
 # )
 # Parser.query("export item as items")
-
-
-
-
-
-
-Parser.query("end")

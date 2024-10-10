@@ -1,4 +1,4 @@
-from GoogleOCR import OCR
+from CachedOCR import OCR
 import re
 from itertools import product
 
